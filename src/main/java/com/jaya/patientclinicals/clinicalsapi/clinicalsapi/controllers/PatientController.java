@@ -27,8 +27,8 @@ public class PatientController {
     }
 
     @GetMapping("/patients")
-    public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
+    public ResponseEntity<List<Patient>> getAllPatients() {
+        return ResponseEntity.ok(patientRepository.findAll());
     }
 
     @GetMapping("/patients/{id}")

@@ -3,6 +3,9 @@ package com.jaya.patientclinicals.clinicalsapi.clinicalsapi.models;
 
 import jakarta.persistence.*;
 import java.sql.Timestamp;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -13,6 +16,7 @@ public class ClinicalData {
     private Long id;
     private String componentName;
     private String componentValue;
+    @CreationTimestamp
     private Timestamp measuredDateTime;
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,5 +63,13 @@ public class ClinicalData {
 
     public void setMeasuredDateTime(Timestamp measuredDateTime) {
         this.measuredDateTime = measuredDateTime;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 }

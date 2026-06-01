@@ -8,16 +8,19 @@ import java.util.List;
 
 import com.jaya.patientclinicals.clinicalsapi.clinicalsapi.models.ClinicalData;
 import com.jaya.patientclinicals.clinicalsapi.clinicalsapi.repos.ClinicalDataRepository;
+import com.jaya.patientclinicals.clinicalsapi.clinicalsapi.repos.PatientRepository;
 
 @RestController
 @RequestMapping("/api")
 public class ClinicalDataController {
-
+    
     private final ClinicalDataRepository clinicalDataRepository;
+    private final PatientRepository patientRepository;
 
     @Autowired
-    public ClinicalDataController(ClinicalDataRepository clinicalDataRepository) {
+    public ClinicalDataController(ClinicalDataRepository clinicalDataRepository, PatientRepository patientRepository) {
         this.clinicalDataRepository = clinicalDataRepository;
+        this.patientRepository = patientRepository;
     }
 
     @PostMapping("/clinicaldata")
@@ -56,4 +59,15 @@ public class ClinicalDataController {
             return ResponseEntity.noContent().build();
         }).orElse(ResponseEntity.notFound().build());
     }
+
+    // method that receives patient id in the URL and clinical data in the body, then saves it
+    @PostMapping("/clinicals/{patientId}")
+    public ResponseEntity<ClinicalData> saveClinicalData(@PathVariable Long patientId, @RequestBody ClinicalData clinicalData) {
+        return patientRepository.findById(patientId).map(patient -> {
+            clinicalData.setPatient(patient);
+            ClinicalData saved = clinicalDataRepository.save(clinicalData);
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
 }
