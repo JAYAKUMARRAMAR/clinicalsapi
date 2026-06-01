@@ -37,6 +37,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    @ExceptionHandler(com.jaya.patientclinicals.clinicalsapi.clinicalsapi.exceptions.PatientNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handlePatientNotFound(RuntimeException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", "Not Found");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleAllExceptions(Exception ex) {
         Map<String, String> body = new HashMap<>();

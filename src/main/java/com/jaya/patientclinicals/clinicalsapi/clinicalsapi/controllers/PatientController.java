@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.jaya.patientclinicals.clinicalsapi.clinicalsapi.models.Patient;
 import com.jaya.patientclinicals.clinicalsapi.clinicalsapi.repos.PatientRepository;
+import com.jaya.patientclinicals.clinicalsapi.clinicalsapi.exceptions.PatientNotFoundException;
 
 @RestController
 @RequestMapping("/api")
@@ -33,27 +34,27 @@ public class PatientController {
 
     @GetMapping("/patients/{id}")
     public ResponseEntity<Patient> getPatient(@PathVariable Long id) {
-        return patientRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Patient patient = patientRepository.findById(id)
+            .orElseThrow(() -> new PatientNotFoundException(id));
+        return ResponseEntity.ok(patient);
     }
 
     @PutMapping("/patients/{id}")
     public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody Patient patient) {
-        return patientRepository.findById(id).map(existing -> {
-            existing.setFirstName(patient.getFirstName());
-            existing.setLastName(patient.getLastName());
-            existing.setAge(patient.getAge());
-            Patient updated = patientRepository.save(existing);
-            return ResponseEntity.ok(updated);
-        }).orElse(ResponseEntity.notFound().build());
+        Patient existing = patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException(id));
+        existing.setFirstName(patient.getFirstName());
+        existing.setLastName(patient.getLastName());
+        existing.setAge(patient.getAge());
+        Patient updated = patientRepository.save(existing);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/patients/{id}")
     public ResponseEntity<Object> deletePatient(@PathVariable Long id) {
-        return patientRepository.findById(id).map(existing -> {
-            patientRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElse(ResponseEntity.notFound().build());
+        Patient existing = patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException(id));
+        patientRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
